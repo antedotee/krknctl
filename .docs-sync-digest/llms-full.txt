@@ -1,0 +1,145 @@
+# krknctl — full entity details
+
+> Auto-generated. Source of truth for the krknctl CLI surface.
+
+## scenario: attach
+scenario_type: cli_command
+description: connects krknctl to the running scenario logs
+
+(no documented flags)
+
+## scenario: clean
+scenario_type: cli_command
+description: cleans already run scenario files and containers
+
+(no documented flags)
+
+## scenario: describe
+scenario_type: cli_command
+description: describes a scenario
+
+(no documented flags)
+
+## scenario: graph
+scenario_type: cli_command
+description: runs or scaffolds a dependency graph based run
+
+(no documented flags)
+
+## scenario: graph_run
+scenario_type: cli_command
+description: runs graph based run
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| alerts-profile | ALERTS_PROFILE | string |  | false | custom alerts profile file path |
+| exit-on-error | EXIT_ON_ERROR | bool |  | false | if set this flag will the workflow will be interrupted and the tool will exit with a status greater than 0 |
+| kubeconfig | KUBECONFIG | string |  | false | kubeconfig path (if not set will default to ~/.kube/config) |
+| metrics-profile | METRICS_PROFILE | string |  | false | custom metrics profile file path |
+
+## scenario: graph_scaffold
+scenario_type: cli_command
+description: Scaffolds a dependency graph based run
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| global-env | GLOBAL_ENV | bool |  | false | if set this flag will add global environment variables to each scenario in the graph |
+
+## scenario: list
+scenario_type: cli_command
+description: lists available scenarios and running scenarios
+
+(no documented flags)
+
+## scenario: list_available
+scenario_type: cli_command
+description: list available krkn-hub scenarios
+
+(no documented flags)
+
+## scenario: list_running
+scenario_type: cli_command
+description: list running krkn-hub scenarios
+
+(no documented flags)
+
+## scenario: query-status
+scenario_type: cli_command
+description: checks the status of a container or a list of containers by container name or container ID
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| graph | GRAPH | string |  | false | to query the exit status of a previously run graph file |
+
+## scenario: random
+scenario_type: cli_command
+description: runs or scaffolds a random chaos run based on a json test plan
+
+(no documented flags)
+
+## scenario: random_run
+scenario_type: cli_command
+description: runs a random run based on a json test plan
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| alerts-profile | ALERTS_PROFILE | string |  | false | custom alerts profile file path |
+| exit-on-error | EXIT_ON_ERROR | bool |  | false | if set this flag will the workflow will be interrupted and the tool will exit with a status greater than 0 |
+| graph-dump | GRAPH_DUMP | string |  | false | specifies the name of the file where the randomly generated dependency graph will be persisted |
+| kubeconfig | KUBECONFIG | string |  | false | kubeconfig path (if not set will default to ~/.kube/config) |
+| max-parallel | MAX_PARALLEL | int |  | false | maximum number of parallel scenarios |
+| metrics-profile | METRICS_PROFILE | string |  | false | custom metrics profile file path |
+| number-of-scenarios | NUMBER_OF_SCENARIOS | int |  | false | allows you to specify the number of elements to select from the execution plan |
+
+## scenario: random_scaffold
+scenario_type: cli_command
+description: scaffolds a random run based on a json test plan
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| global-env | GLOBAL_ENV | bool |  | false | if set this flag will add global environment variables to each scenario in the graph |
+| number-of-scenarios | NUMBER_OF_SCENARIOS | int |  | false | the number of scenarios that will be created from the template file |
+| seed-file | SEED_FILE | string |  | false | template file with already configured scenarios used to generate the random test plan |
+
+## scenario: run
+scenario_type: cli_command
+description: krknctl run [flags]
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| alerts-profile | ALERTS_PROFILE | string |  | false | custom alerts profile file path |
+| detached | DETACHED | bool |  | false | if set this flag will run in detached mode |
+| kubeconfig | KUBECONFIG | string |  | false | kubeconfig path (if not set will default to ~/.kube/config) |
+| metrics-profile | METRICS_PROFILE | string |  | false | custom metrics profile file path |
+
+## scenario: visualize
+scenario_type: cli_command
+description: deploys krkn-visualize (Grafana dashboard) with Elasticsearch and optional Prometheus datasources to the current Kubernetes cluster
+
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| delete | DELETE | bool |  | false | delete an existing krkn-visualize deployment |
+| es-password | ES_PASSWORD | string |  | false | Elasticsearch password |
+| es-url | ES_URL | string |  | false | Elasticsearch URL |
+| es-username | ES_USERNAME | string |  | false | Elasticsearch username |
+| grafana-password | GRAFANA_PASSWORD | string |  | false | Grafana admin password (required unless --delete is set) |
+| kubeconfig | KUBECONFIG | string |  | false | kubeconfig path (defaults to ~/.kube/config) |
+| kubectl | KUBECTL | string |  | false | kubectl command to use (e.g. oc for OpenShift) (default "kubectl") |
+| namespace | NAMESPACE | string |  | false | Kubernetes namespace to deploy into (default "krkn-visualize") |
+| prometheus-bearer-token | PROMETHEUS_BEARER_TOKEN | string |  | false | Prometheus bearer token for authentication (optional) |
+| prometheus-url | PROMETHEUS_URL | string |  | false | Prometheus URL for datasource (optional) |
+
