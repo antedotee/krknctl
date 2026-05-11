@@ -7,7 +7,7 @@
 
 - attach (0 flags)
 - clean (0 flags)
-- describe (0 flags)
+- describe (1 flag)
 - graph (0 flags)
 - graph_run (4 flags)
 - graph_scaffold (1 flag)

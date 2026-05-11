@@ -18,7 +18,11 @@ description: cleans already run scenario files and containers
 scenario_type: cli_command
 description: describes a scenario
 
-(no documented flags)
+### parameters
+
+| name | variable | type | default | required | description |
+| ---- | -------- | ---- | ------- | -------- | ----------- |
+| smoke-test-flag | SMOKE_TEST_FLAG | string |  | false | Smoke-test flag — auto-added by docs-sync matrix C3; do not merge upstream. (default "default-value") |
 
 ## scenario: graph
 scenario_type: cli_command
