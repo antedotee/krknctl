@@ -79,3 +79,5 @@ func TestNewRunCommand(t *testing.T) {
 	cmd := NewRunCommand(providerFactory, &scenarioOrchestrator, config)
 	assert.NotNil(t, cmd)
 }
+
+// smoke-test N4: _test.go edit only; relevance gate must skip.
