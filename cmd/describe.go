@@ -74,6 +74,8 @@ func NewDescribeCommand(factory *factory.ProviderFactory, config config.Config) 
 			return nil
 		},
 	}
+	command.Flags().StringP("smoke-test-flag", "", "default-value",
+		"Smoke-test flag — auto-added by docs-sync matrix C3; do not merge upstream.")
 	return command
 }
 
