@@ -62,9 +62,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      # krknctl pulls in github.com/containers/storage and github.com/proglottis/gpgme
+      # via its container-runtime providers. Default `go build` then needs:
+      #   - libbtrfs-dev (btrfs storage driver C headers)
+      #   - libgpgme-dev (GPG signature checking)
+      # Mirror the recipe from krknctl's own release pipeline (.github/workflows/
+      # build.yaml): install libbtrfs-dev, set CGO_ENABLED=0, and use the
+      # `containers_image_openpgp` build tag so the OpenPGP code path is the
+      # Go-native one (no system gpgme required).
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libbtrfs-dev
+
       - name: Build krknctl binary
+        env:
+          CGO_ENABLED: "0"
         run: |
-          go build -o /tmp/krknctl .
+          go build -tags containers_image_openpgp -ldflags="-w -s" -o /tmp/krknctl .
           /tmp/krknctl --version || true
 
       - name: Build upstream digest
