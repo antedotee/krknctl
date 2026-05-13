@@ -12,6 +12,14 @@ permissions:
   contents: read
   pull-requests: read
 
+# Replace the default krknctl checkout with the docs repo. The agent reads krknctl
+# PR details via the github MCP (read-only) and edits docs in this checkout, which
+# becomes the source for the cross-repo git format-patch.
+checkout:
+  - repository: antedotee/krkn-website
+    github-token: ${{ secrets.GH_AW_CROSS_REPO_PAT }}
+    current: true
+
 engine: copilot
 strict: true
 
@@ -107,38 +115,28 @@ Before editing, ALSO read `antedotee/krkn-website/CLAUDE.md` to learn the projec
 
 If you genuinely cannot find ANY reasonable file (extremely rare — `usage.md` always exists for `run` changes), use `_index.md` and add a `Notes for reviewers` entry suggesting a dedicated page. Always prefer creating the PR over calling `noop`.
 
-### 4. Make the smallest possible edit (CROSS-REPO MECHANICS — read carefully)
+### 4. Make the edit (you are already in the docs repo checkout)
 
-**This is the part most agents get wrong.** This workflow runs in the krknctl repo, but the docs file lives in krkn-website. The github MCP is READ-ONLY — you cannot use it to write. The cross-repo mechanism is:
-
-1. You will edit files **as if they existed in YOUR LOCAL krknctl workspace**, even though they actually live in krkn-website.
-2. gh-aw automatically exports your local commits as a `git format-patch` and applies them to krkn-website with `git am --3way` after you call `create_pull_request`.
-3. The file `content/en/docs/krknctl/usage.md` does NOT exist in this krknctl workspace — that's expected and fine.
+The workflow's `checkout:` frontmatter has cloned `antedotee/krkn-website` as your `${{ github.workspace }}`. You are physically inside the docs repo. The file `content/en/docs/krknctl/usage.md` **exists right here, on disk**. Verify with `cat content/en/docs/krknctl/usage.md` if you want.
 
 **Concrete steps:**
 
-a. Use the `github` MCP `get_file_contents` to fetch the current full content of `content/en/docs/krknctl/usage.md` from `antedotee/krkn-website`. Hold it in memory.
+a. Use the `Edit` tool to modify `content/en/docs/krknctl/usage.md`. Touch only sections affected by the upstream diff. Match existing tone, heading depth, and parameter-table format exactly. For a new flag, locate the existing parameter table and add one row. Do not reformat the rest of the table.
 
-b. Use the `Write` tool (NOT edit — Write because the file doesn't exist locally) to create `content/en/docs/krknctl/usage.md` in YOUR local krknctl workspace with the EXACT current content from step (a) — byte-for-byte.
-
-c. Now use the `Edit` tool to apply your changes to that local file. Touch only sections affected by the diff. Match existing tone, heading depth, and parameter-table format exactly. For a new flag, locate the existing parameter table and add one row. Do not reformat the rest of the table.
-
-d. Create a new git branch named `docs-sync/krknctl-<short-sha>` where `<short-sha>` is the first 7 chars of `${{ github.event.pull_request.head.sha }}`:
+b. Create a new git branch named `docs-sync/krknctl-<short-sha>` where `<short-sha>` is the first 7 chars of `${{ github.event.pull_request.head.sha }}`:
    ```
    git checkout -b docs-sync/krknctl-<short-sha>
    ```
 
-e. Stage and commit:
+c. Stage and commit:
    ```
    git add content/en/docs/krknctl/usage.md
    git commit -m "docs(krknctl): document <flag/option> from upstream PR #${{ github.event.pull_request.number }}"
    ```
 
-f. Verify your current branch with `git branch --show-current` — this is the value you'll pass to `create_pull_request`.
+d. Verify your current branch with `git branch --show-current` — this is the value you'll pass to `create_pull_request`.
 
-**Why two commits aren't needed:** gh-aw's `git am --3way` applies the patch against the live krkn-website main. Because your step (b) wrote the EXACT current content of usage.md, and step (c) modified only the parts you wanted to change, the patch is a clean delta. When git am --3way runs against krkn-website (which has the same starting content), the delta applies cleanly.
-
-**Never `noop` because "the file isn't in my workspace"** — you create it there. That's the entire point of this section.
+**You are NOT in krknctl.** You are in krkn-website. The github MCP `pull_request_read` calls you made earlier are how you read the krknctl PR diff — that's correct. But your file edits happen on disk here, in the krkn-website checkout. Never call `noop` because of "workspace permissions" — you have full write access to the docs repo working tree.
 
 ### 5. Open the cross-repo PR
 
