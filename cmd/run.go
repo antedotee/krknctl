@@ -337,6 +337,8 @@ func NewRunCommand(factory *factory.ProviderFactory, scenarioOrchestrator *scena
 		},
 	}
 
+	command.Flags().String("namespace", "default", "Kubernetes namespace where chaos scenarios will run")
+
 	return command
 }
 
