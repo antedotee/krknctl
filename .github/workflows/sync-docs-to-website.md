@@ -12,7 +12,9 @@ permissions:
   contents: read
   pull-requests: read
 
-engine: copilot
+engine:
+  id: copilot
+  model: gpt-4o
 strict: true
 
 network:
