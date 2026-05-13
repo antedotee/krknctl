@@ -339,6 +339,7 @@ func NewRunCommand(factory *factory.ProviderFactory, scenarioOrchestrator *scena
 
 	command.Flags().String("namespace", "default", "Kubernetes namespace where chaos scenarios will run")
 	command.Flags().Bool("dry-run", false, "Print scenario configuration without executing it")
+	command.Flags().BoolP("verbose", "v", false, "Enable verbose output including per-step progress logs")
 
 	return command
 }
