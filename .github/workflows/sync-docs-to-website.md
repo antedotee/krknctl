@@ -62,7 +62,7 @@ A PR just merged to `${{ github.repository }}`. Decide if it changes any user-fa
 - DO NOT include narrative about *why* the change was made — describe only the resulting user-facing behavior.
 - DO NOT hardcode hex colors or styles; if the docs file uses CSS custom properties, preserve them.
 - IF the merged PR makes no user-facing CLI flag, command, or config-field change, STOP. Do not create a PR.
-- IF the docs file you would update does not exist yet, STOP. Add a note in the PR body that a human should bootstrap the page.
+- IF no command-specific docs file matches, FALL BACK to `content/en/docs/krknctl/usage.md`. Never STOP just because a guessed-at file path is missing — always pick the closest existing file. Use `_index.md` as last-resort fallback.
 
 ## Steps
 
@@ -90,15 +90,22 @@ If the list is empty after scanning every changed file: **STOP. Do not call crea
 
 ### 3. Locate the docs file to edit
 
-Use the `github` toolset to read the file tree of `antedotee/krkn-website` under `content/en/docs/krknctl/`. The relevant file is usually named after the command:
+Use the `github` toolset to **list the actual files** under `antedotee/krkn-website/content/en/docs/krknctl/` (do NOT assume which files exist). At time of writing, the real files are:
 
-- `krknctl run` → `content/en/docs/krknctl/run.md`
-- `krknctl list` → `content/en/docs/krknctl/list.md`
-- Global flags → `content/en/docs/krknctl/_index.md`
+- `content/en/docs/krknctl/usage.md` — documents `krknctl run` and all its flags. **This is the default target for any flag/option/config change to the `run` command.**
+- `content/en/docs/krknctl/_index.md` — landing page for krknctl docs.
+- `content/en/docs/krknctl/randomized-chaos-testing.md` — randomized testing mode.
+
+Decision rule:
+1. If a file's name matches the changed command (e.g. `randomized-chaos-testing.md` for changes to randomized mode), use it.
+2. Otherwise, for changes to `krknctl run` (flags, options, config), update **`usage.md`** — this is the standing reference for `run`.
+3. Last-resort fallback: `_index.md`.
+
+NEVER refuse to act because a file like `run.md` doesn't exist — that's expected. The correct file for `run` is `usage.md`.
 
 Before editing, ALSO read `antedotee/krkn-website/CLAUDE.md` to learn the project's conventions (heading depth, code-block style, callout shortcodes).
 
-If no matching docs file exists, note this and create the PR anyway — but only with a `Notes for reviewers` entry asking a human to bootstrap that page. Do not invent a new page.
+If you genuinely cannot find ANY reasonable file (extremely rare — `usage.md` always exists for `run` changes), use `_index.md` and add a `Notes for reviewers` entry suggesting a dedicated page. Always prefer creating the PR over calling `noop`.
 
 ### 4. Make the smallest possible edit
 
