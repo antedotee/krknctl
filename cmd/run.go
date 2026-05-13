@@ -342,6 +342,7 @@ func NewRunCommand(factory *factory.ProviderFactory, scenarioOrchestrator *scena
 	command.Flags().BoolP("verbose", "v", false, "Enable verbose output including per-step progress logs")
 	command.Flags().Duration("timeout", 0, "Maximum duration before the scenario is aborted (e.g. 5m, 1h); 0 means no timeout")
 	command.Flags().Int("retries", 0, "Number of times to retry the scenario on transient failure before giving up")
+	command.Flags().String("output-format", "text", "Output format for scenario results: text, json, or yaml")
 
 	return command
 }
