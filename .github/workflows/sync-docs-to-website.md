@@ -107,15 +107,48 @@ Before editing, ALSO read `antedotee/krkn-website/CLAUDE.md` to learn the projec
 
 If you genuinely cannot find ANY reasonable file (extremely rare — `usage.md` always exists for `run` changes), use `_index.md` and add a `Notes for reviewers` entry suggesting a dedicated page. Always prefer creating the PR over calling `noop`.
 
-### 4. Make the smallest possible edit
+### 4. Make the smallest possible edit (CROSS-REPO MECHANICS — read carefully)
 
-Use the `edit` tool. Touch only sections affected by the diff. Match existing tone, heading depth, and parameter-table format exactly.
+**This is the part most agents get wrong.** This workflow runs in the krknctl repo, but the docs file lives in krkn-website. The github MCP is READ-ONLY — you cannot use it to write. The cross-repo mechanism is:
 
-For a new flag, locate the existing parameter table (usually a markdown table or definition list) and add one row. Do not reformat the rest of the table.
+1. You will edit files **as if they existed in YOUR LOCAL krknctl workspace**, even though they actually live in krkn-website.
+2. gh-aw automatically exports your local commits as a `git format-patch` and applies them to krkn-website with `git am --3way` after you call `create_pull_request`.
+3. The file `content/en/docs/krknctl/usage.md` does NOT exist in this krknctl workspace — that's expected and fine.
+
+**Concrete steps:**
+
+a. Use the `github` MCP `get_file_contents` to fetch the current full content of `content/en/docs/krknctl/usage.md` from `antedotee/krkn-website`. Hold it in memory.
+
+b. Use the `Write` tool (NOT edit — Write because the file doesn't exist locally) to create `content/en/docs/krknctl/usage.md` in YOUR local krknctl workspace with the EXACT current content from step (a) — byte-for-byte.
+
+c. Now use the `Edit` tool to apply your changes to that local file. Touch only sections affected by the diff. Match existing tone, heading depth, and parameter-table format exactly. For a new flag, locate the existing parameter table and add one row. Do not reformat the rest of the table.
+
+d. Create a new git branch named `docs-sync/krknctl-<short-sha>` where `<short-sha>` is the first 7 chars of `${{ github.event.pull_request.head.sha }}`:
+   ```
+   git checkout -b docs-sync/krknctl-<short-sha>
+   ```
+
+e. Stage and commit:
+   ```
+   git add content/en/docs/krknctl/usage.md
+   git commit -m "docs(krknctl): document <flag/option> from upstream PR #${{ github.event.pull_request.number }}"
+   ```
+
+f. Verify your current branch with `git branch --show-current` — this is the value you'll pass to `create_pull_request`.
+
+**Why two commits aren't needed:** gh-aw's `git am --3way` applies the patch against the live krkn-website main. Because your step (b) wrote the EXACT current content of usage.md, and step (c) modified only the parts you wanted to change, the patch is a clean delta. When git am --3way runs against krkn-website (which has the same starting content), the delta applies cleanly.
+
+**Never `noop` because "the file isn't in my workspace"** — you create it there. That's the entire point of this section.
 
 ### 5. Open the cross-repo PR
 
-Call the `create_pull_request` MCP tool from the safe-outputs server (NOT the GitHub MCP server's `create_pull_request`). The PR body MUST be exactly this template, filled in:
+Call the `create_pull_request` MCP tool from the safe-outputs server (NOT the GitHub MCP server's `create_pull_request`).
+
+- `branch`: the value of `git branch --show-current` from step (f) above (e.g. `docs-sync/krknctl-abc1234`).
+- `title`: starts with `[docs-sync] ` (prefix is auto-prepended by gh-aw; just write the descriptive part).
+- `body`: the template below, filled in.
+
+The PR body MUST be exactly this template, filled in:
 
 ```markdown
 ## Auto-generated docs update
