@@ -37,7 +37,7 @@ timeout-minutes: 20
 safe-outputs:
   github-token: ${{ secrets.GH_AW_CROSS_REPO_PAT }}
   create-pull-request:
-    target-repo: ${{ vars.DOCS_TARGET_REPO }}
+    target-repo: antedotee/krkn-website
     title-prefix: "[docs-sync] "
     labels: [automated-docs, source/krknctl]
     draft: false
@@ -45,14 +45,14 @@ safe-outputs:
 
 # Sync krknctl docs to website
 
-A PR just merged to `${{ github.repository }}`. Decide if it changes any user-facing CLI flag, command, or config field. If yes, propose corresponding docs updates in `${{ vars.DOCS_TARGET_REPO }}`.
+A PR just merged to `${{ github.repository }}`. Decide if it changes any user-facing CLI flag, command, or config field. If yes, propose corresponding docs updates in `antedotee/krkn-website`.
 
 ## Triggering PR
 
 - **Number:** #${{ github.event.pull_request.number }}
 - **Title:** ${{ github.event.pull_request.title }}
-- **URL:** ${{ github.event.pull_request.html_url }}
-- **Merge SHA:** ${{ github.event.pull_request.merge_commit_sha }}
+- **Head SHA:** ${{ github.event.pull_request.head.sha }}
+- **URL:** Construct it as `https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}` when you need to reference it.
 
 ## Rules — read first, follow strictly
 
@@ -90,13 +90,13 @@ If the list is empty after scanning every changed file: **STOP. Do not call crea
 
 ### 3. Locate the docs file to edit
 
-Use the `github` toolset to read the file tree of `${{ vars.DOCS_TARGET_REPO }}` under `content/en/docs/krknctl/`. The relevant file is usually named after the command:
+Use the `github` toolset to read the file tree of `antedotee/krkn-website` under `content/en/docs/krknctl/`. The relevant file is usually named after the command:
 
 - `krknctl run` → `content/en/docs/krknctl/run.md`
 - `krknctl list` → `content/en/docs/krknctl/list.md`
 - Global flags → `content/en/docs/krknctl/_index.md`
 
-Before editing, ALSO read `${{ vars.DOCS_TARGET_REPO }}/CLAUDE.md` to learn the project's conventions (heading depth, code-block style, callout shortcodes).
+Before editing, ALSO read `antedotee/krkn-website/CLAUDE.md` to learn the project's conventions (heading depth, code-block style, callout shortcodes).
 
 If no matching docs file exists, note this and create the PR anyway — but only with a `Notes for reviewers` entry asking a human to bootstrap that page. Do not invent a new page.
 
@@ -113,8 +113,8 @@ Call the `create_pull_request` MCP tool from the safe-outputs server (NOT the Gi
 ```markdown
 ## Auto-generated docs update
 
-**Triggered by:** ${{ github.event.pull_request.html_url }}
-**Source commit:** ${{ github.event.pull_request.merge_commit_sha }}
+**Triggered by:** https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+**Source commit:** ${{ github.event.pull_request.head.sha }}
 
 ### Detected user-facing changes
 - <one bullet per change from Step 2>
